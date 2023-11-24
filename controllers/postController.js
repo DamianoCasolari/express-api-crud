@@ -5,35 +5,36 @@ const notFound = require("../utilities/notFoundErrors");
 const customError = require("../utilities/customErrors")
 
 
-
-
-
-
 async function index(req, res, next) {
 
     const filters = req.query.filters
-    const queryFIlter = {}
+    const queryFilter = {}
+    const numberOfElementPerPage = 3
+    const currentPage = req.query.currentPage || 1
 
     if (filters && filters.title) {
-        queryFIlter.title = {
+        queryFilter.title = {
             contains: filters.title
         }
     }
     if (filters && filters.slug) {
-        queryFIlter.slug = {
+        queryFilter.slug = {
             contains: filters.slug
         }
     }
 
     try {
+        const numberAllPosts = await prisma.post.count({ where: queryFilter });
         const data = await prisma.post.findMany({
-            where: queryFIlter
+            skip: (currentPage - 1) * numberOfElementPerPage,
+            take: numberOfElementPerPage,
+            where: queryFilter
         });
         if (data.length == 0) {
             next(new Error("Nessun Risultao"))
         }
 
-        return res.json(data);
+        return res.json({data,currentPage,numberAllPosts});
     } catch (error) {
         console.error("Errore durante l'elaborazione della richiesta:", error);
         next(new Error("Errore interno del server"))
@@ -189,7 +190,6 @@ async function destroy(req, res) {
         return res.json("File eliminato con successo")
     } catch (error) {
         console.error("Errore durante l'elaborazione della richiesta:", error);
-        // throw new Error("Errore interno del server")  
         next(new Error("Errore interno del server"))
     }
 }

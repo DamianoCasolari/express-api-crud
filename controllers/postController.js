@@ -86,16 +86,6 @@ async function create(req, res,next) {
     }
 }
 
-async function filter(req, res) {
-    const data = await prisma.post.findMany({
-        where: {
-            published: true
-        }
-    })
-    return res.json(data)
-}
-
-
 async function destroy(req, res) {
     let slug = req.params.slug
     try {

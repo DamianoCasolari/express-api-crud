@@ -6,7 +6,7 @@ const path = require("path")
 // import local files
 const postRouters = require("./routes/postRoutes")
 const errorsMiddleware = require("./middleware/errorsMiddleware")
-const notFound = require("./utilities/notFoundErrors")
+const notFound = require("./middleware/routeNotFound")
 
 
 // create istance of express 

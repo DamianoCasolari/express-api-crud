@@ -67,7 +67,27 @@ async function create(req, res, next) {
         next(new Error(" Title and content are required"))
     }
 
+    if (reqBody.title && reqBody.title.trim() == "") {
+        next(new notFound("Title is required "))
+    }
+    if (reqBody.image && reqBody.image.trim() == "") {
+        next(new notFound("Image is required "))
+    }
+    if (reqBody.content && reqBody.content.trim() == "") {
+        next(new notFound("content is required "))
+    }
+
     try {
+        const existingPost = await prisma.post.findFirst({
+            where: {
+                title: reqBody.title,
+            }
+        });
+
+        if (existingPost) {
+            reqBody.slug = reqBody.slug + `-${existingPost.id}`
+        }
+
         const data = await prisma.post.create({
             data: {
                 title: reqBody.title,
@@ -102,9 +122,21 @@ async function edit(req, res, next) {
 
     if (reqBody.title) {
         newSlug = kebabCase(reqBody.title)
-    } 
-console.log(newSlug);
+    }
     try {
+        const existingPost = await prisma.post.findFirst({
+            where: {
+                title: reqBody.title,
+                NOT: {
+                    slug: req.params.slug
+                }
+            }
+        });
+
+        if (existingPost) {
+            newSlug = `${newSlug}-${existingPost.id}`;
+        }
+
         const data = await prisma.post.updateMany({
             where: {
                 slug: req.params.slug
@@ -117,18 +149,25 @@ console.log(newSlug);
                 published: reqBody.published,
             }
 
+
         })
+        console.log(data);
+        if (!Array.isArray(data) || data.length == undefined) {
+            next(new notFound(" Il post inserito non risulta registrato"))
+            return
+        }
 
         const updatedPost = await prisma.post.findUnique({
             where: {
-                slug: newSlug ?? req.params.slug,
+                slug: newSlug || req.params.slug,
             },
         });
 
 
+
         return res.json(updatedPost);
     } catch (error) {
-        console.error("Errore durante l'elaborazione della richiesta:", error);
+        console.error(" Errore durante l'elaborazione della richiesta:", error);
         next(new Error("Errore interno del server"))
     }
 }

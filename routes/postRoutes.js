@@ -10,6 +10,7 @@ const postController = require("../controllers/postController")
 router.get("/", postController.index)
 router.get("/:slug", postController.show)
 router.post("/", postController.create)
+router.put("/:slug", postController.edit)
 router.delete("/:slug", postController.destroy)
 
 //export file

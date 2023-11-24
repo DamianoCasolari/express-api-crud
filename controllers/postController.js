@@ -2,6 +2,10 @@ const { PrismaClient } = require("@prisma/client")
 const prisma = new PrismaClient()
 const { kebabCase } = require("lodash");
 const notFound = require("../utilities/notFoundErrors");
+const customError = require("../utilities/customErrors")
+
+
+
 
 
 
@@ -46,7 +50,7 @@ async function show(req, res, next) {
         })
 
         if (!data) {
-            next(new notFound("Il post inserito non risulta registrato"))
+            next(new customError("Il post inserito non risulta registrato", 404))
         }
 
         return res.json(data)
@@ -111,13 +115,15 @@ async function edit(req, res, next) {
     let newSlug
 
     if (reqBody.title && reqBody.title.trim() == "") {
-        next(new notFound("Title is required "))
+        next(new customError("Title is required ", 400))
+
     }
     if (reqBody.image && reqBody.image.trim() == "") {
-        next(new notFound("Image is required "))
+        next(new customError("Image is required ", 400))
+
     }
     if (reqBody.content && reqBody.content.trim() == "") {
-        next(new notFound("content is required "))
+        next(new customError("Content is required ", 400))
     }
 
     if (reqBody.title) {
@@ -153,7 +159,7 @@ async function edit(req, res, next) {
         })
         console.log(data);
         if (!Array.isArray(data) || data.length == undefined) {
-            next(new notFound(" Il post inserito non risulta registrato"))
+            next(new customError("Il post inserito non risulta registrato", 404))
             return
         }
 

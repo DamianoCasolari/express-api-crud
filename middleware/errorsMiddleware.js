@@ -1,4 +1,4 @@
 module.exports = function (err,req,res,next){
     console.log(err);
-    return res.status(err.status ?? 500).send("Errore sistema :" + err.message)
+    return res.status(err.status ?? 500).send("Errore sistema : " + err.message)
 }

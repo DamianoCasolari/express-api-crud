@@ -5,6 +5,9 @@ const path = require("path")
 
 // import local files
 const postRouters = require("./routes/postRoutes")
+const errorsMiddleware = require("./middleware/errorsMiddleware")
+const notFound = require("./utilities/notFoundErrors")
+
 
 // create istance of express 
 const app = express()
@@ -16,6 +19,12 @@ app.use(express.json())
 
 // Crete routes GET
 app.use("/posts", postRouters)
+
+// Add page not found middleware
+app.use(notFound)
+
+// Crete errors middleware
+app.use(errorsMiddleware)
 
 // Bind server with a PORT
 app.listen(3000, console.log("Create server correctly = http://localhost:3000"))

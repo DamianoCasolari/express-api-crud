@@ -9,6 +9,7 @@ const postController = require("../controllers/postController")
 // define routes and link correct methods
 router.get("/", postController.index)
 router.get("/:slug", postController.show)
+router.post("/", postController.create)
 router.delete("/:slug", postController.destroy)
 
 //export file
